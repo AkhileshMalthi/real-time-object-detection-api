@@ -1,0 +1,120 @@
+name: CI
+
+# When to run this workflow
+on:
+  # Run on push to main branch
+  push:
+    branches: [ main ]
+  # Run on pull requests to main
+  pull_request:
+    branches: [ main ]
+  # Allow manual trigger
+  workflow_dispatch:
+
+# Cancel in-progress runs when new commit is pushed
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Job 1: Code Quality Checks
+  lint:
+    name: Lint and Format Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Install dependencies
+        run: |
+          uv sync --all-extras --dev
+
+      - name: Run Ruff Linter
+        run: |
+          uv run ruff check . --output-format=github
+
+      - name: Run Ruff Formatter Check
+        run: |
+          uv run ruff format --check .
+
+  # Job 2: Run Tests
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ['3.12']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Install dependencies
+        run: |
+          uv sync --all-extras --dev
+
+      - name: Create necessary directories
+        run: |
+          mkdir -p models output
+
+      - name: Run Unit and Integration Tests (Fast)
+        run: |
+          uv run pytest tests/ -v -m "not e2e" --tb=short --cov=api --cov-report=xml --cov-report=term
+
+      - name: Run E2E Tests (with real model)
+        run: |
+          uv run pytest tests/ -v -m e2e --tb=short
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+        continue-on-error: true
+
+  # Job 3: Build Check (optional - verifies package can be built)
+  build:
+    name: Build Package
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Build package
+        run: |
+          uv build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
