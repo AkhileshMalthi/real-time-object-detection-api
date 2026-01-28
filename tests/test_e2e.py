@@ -175,9 +175,9 @@ class TestEndToEndDetection:
 
         # Lower threshold should detect >= higher threshold
         # (might be equal if no objects detected or all high confidence)
-        assert (
-            low_count >= high_count
-        ), f"Lower threshold ({low_count}) should detect >= higher threshold ({high_count})"
+        assert low_count >= high_count, (
+            f"Lower threshold ({low_count}) should detect >= higher threshold ({high_count})"
+        )
 
     def test_handles_image_with_no_objects(self, real_client):
         """
