@@ -1,0 +1,8 @@
+# Streamlit web framework
+streamlit>=1.43.0
+
+# HTTP client for API calls
+requests>=2.32.0
+
+# Image handling
+pillow>=11.0.0

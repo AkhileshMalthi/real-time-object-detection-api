@@ -1,0 +1,22 @@
+# CPU-only PyTorch (much smaller than full torch)
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
+torchvision
+
+# FastAPI and server
+fastapi>=0.128.0
+uvicorn[standard]>=0.40.0
+
+# Pydantic for validation
+pydantic>=2.12.5
+
+# File upload support
+python-multipart>=0.0.22
+
+# YOLOv8 model
+ultralytics>=8.4.7
+
+# Image processing
+pillow>=11.0.0
+opencv-python-headless>=4.10.0
+numpy>=1.26.0
