@@ -10,3 +10,4 @@ class Detection(BaseModel):
 class DetectionResponse(BaseModel):
     detections: list[Detection]
     summary: dict[str, int]
+    annotated_image: str | None = None  # Base64 encoded image

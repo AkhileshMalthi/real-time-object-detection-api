@@ -4,9 +4,16 @@ import io
 from fastapi import FastAPI, File, Form, UploadFile
 from PIL import Image
 
-from .config import MODEL_PATH, OUTPUT_DIR
-from .detector_service import DetectorService
-from .models import DetectionResponse
+# Support both package imports (for testing) and direct imports (for Docker)
+try:
+    from .config import MODEL_PATH, OUTPUT_DIR
+    from .detector_service import DetectorService
+    from .models import DetectionResponse
+except ImportError:
+    from config import MODEL_PATH, OUTPUT_DIR
+    from detector_service import DetectorService
+
+    from models import DetectionResponse
 
 app = FastAPI(title="YOLOv8 Object Detection API")
 
