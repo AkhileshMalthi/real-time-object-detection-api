@@ -4,6 +4,7 @@ Unit tests for DetectorService.
 
 from unittest.mock import Mock, patch
 
+import numpy as np
 import pytest
 
 from api.detector_service import DetectorService
@@ -63,7 +64,8 @@ class TestDetectorService:
         mock_box.cls = [0]  # class_id 0 = 'person' from mock_instance.names
 
         mock_result.boxes = [mock_box]
-        mock_result.plot = Mock(return_value=None)
+        mock_result.boxes = [mock_box]
+        mock_result.plot = Mock(return_value=np.zeros((100, 100, 3), dtype=np.uint8))
 
         mock_model.return_value = [mock_result]
 
@@ -107,7 +109,8 @@ class TestDetectorService:
         mock_box3.cls = [0]  # person
 
         mock_result.boxes = [mock_box1, mock_box2, mock_box3]
-        mock_result.plot = Mock(return_value=None)
+        mock_result.boxes = [mock_box1, mock_box2, mock_box3]
+        mock_result.plot = Mock(return_value=np.zeros((100, 100, 3), dtype=np.uint8))
         mock_model.return_value = [mock_result]
 
         # Execute
@@ -129,7 +132,8 @@ class TestDetectorService:
         # Setup: Empty detection
         mock_result = Mock()
         mock_result.boxes = []  # No detections
-        mock_result.plot = Mock(return_value=None)
+        mock_result.boxes = []  # No detections
+        mock_result.plot = Mock(return_value=np.zeros((100, 100, 3), dtype=np.uint8))
         mock_model.return_value = [mock_result]
 
         # Execute
@@ -149,7 +153,9 @@ class TestDetectorService:
         # Setup
         mock_result = Mock()
         mock_result.boxes = []
-        mock_result.plot = Mock(return_value="fake_image_array")
+        mock_result.boxes = []
+        dummy_img = np.zeros((100, 100, 3), dtype=np.uint8)
+        mock_result.plot = Mock(return_value=dummy_img)
         mock_model.return_value = [mock_result]
 
         # Execute
@@ -157,7 +163,14 @@ class TestDetectorService:
 
         # Assert: cv2.imwrite was called with correct path
         expected_path = str(temp_output_dir / "last_annotated.jpg")
-        mock_imwrite.assert_called_once_with(expected_path, "fake_image_array")
+        # Assert: cv2.imwrite was called with correct path
+        expected_path = str(temp_output_dir / "last_annotated.jpg")
+        # Check that imwrite was called with the path and our dummy image
+        mock_imwrite.assert_called_once()
+        assert mock_imwrite.call_args[0][0] == expected_path
+        # Use simple identity check or just assert called, since comparing numpy arrays in args can be tricky
+        # but here we passed the exact object
+        assert mock_imwrite.call_args[0][1] is dummy_img
 
     def test_confidence_threshold_applied(self, detector_service, sample_image, mock_model):
         """
@@ -166,7 +179,8 @@ class TestDetectorService:
         # Setup
         mock_result = Mock()
         mock_result.boxes = []
-        mock_result.plot = Mock(return_value=None)
+        mock_result.boxes = []
+        mock_result.plot = Mock(return_value=np.zeros((100, 100, 3), dtype=np.uint8))
         mock_model.return_value = [mock_result]
 
         # Execute with custom threshold

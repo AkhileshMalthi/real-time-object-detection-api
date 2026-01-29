@@ -25,7 +25,8 @@ dev = [
     "ruff>=0.14.14",
 ]
 
+[tool.setuptools]
+packages = ["api", "ui"]
+
 [tool.pytest.ini_options]
-markers = [
-    "e2e: End-to-end tests with real model (slower, no mocks)",
-]
+markers = ["e2e: End-to-end tests with real model (slower, no mocks)"]

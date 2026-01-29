@@ -5,7 +5,7 @@ from fastapi import FastAPI, File, Form, UploadFile
 from PIL import Image
 
 # Support both package imports (for testing) and direct imports (for Docker)
-try:
+try:  # noqa: I001
     from .config import MODEL_PATH, OUTPUT_DIR
     from .detector_service import DetectorService
     from .models import DetectionResponse
