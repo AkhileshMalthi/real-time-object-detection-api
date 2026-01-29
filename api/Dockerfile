@@ -26,8 +26,8 @@ RUN wget -q -O /app/models/yolov8n.pt \
 COPY . .
 
 # Cloud Run sets the PORT env var (default 8080)
-ENV PORT=8080
-EXPOSE 8080
+ENV PORT=8000
+EXPOSE 8000
 
 # Use shell form to allow variable expansion
 CMD uvicorn main:app --host 0.0.0.0 --port ${PORT}
