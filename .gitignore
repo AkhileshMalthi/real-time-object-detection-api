@@ -208,3 +208,4 @@ __marimo__/
 
 # Ignore .pt files (PyTorch model files)
 *.pt
+output/
