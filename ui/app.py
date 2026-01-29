@@ -22,9 +22,9 @@ with st.sidebar:
 
     st.divider()
 
-    # distinct endpoints
-    DETECT_URL = os.getenv("DETECT_URL", "http://api:8000/detect")
-    HEALTH_URL = os.getenv("HEALTH_URL", "http://api:8000/health")
+    # API_URL is the full path to the detection endpoint
+    API_URL = os.getenv("API_URL", "http://api:8000/detect")
+    HEALTH_URL = API_URL.replace("/detect", "/health")
 
     try:
         if requests.get(HEALTH_URL, timeout=3).status_code == 200:
@@ -50,7 +50,7 @@ if uploaded_file:
                 files = {"image": (uploaded_file.name, uploaded_file.getvalue(), "image/jpeg")}
                 data = {"confidence_threshold": str(confidence)}
 
-                response = requests.post(DETECT_URL, files=files, data=data, timeout=60)
+                response = requests.post(API_URL, files=files, data=data, timeout=60)
 
                 if response.status_code == 200:
                     result = response.json()

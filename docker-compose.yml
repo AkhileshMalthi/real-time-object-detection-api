@@ -27,5 +27,4 @@ services:
     env_file:
       - .env
     environment:
-      - DETECT_URL=http://api:8000/detect
-      - HEALTH_URL=http://api:8000/health
+      - API_URL=http://localhost:8000/detect # Local Docker URL. Change this to your deployed API endpoint.
