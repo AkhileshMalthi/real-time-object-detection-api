@@ -21,8 +21,11 @@ with st.sidebar:
     confidence = st.slider("Confidence Threshold", 0.0, 1.0, 0.25, 0.05)
 
     st.divider()
-    API_BASE_URL = os.getenv("API_URL", "http://api:8000/detect")
-    HEALTH_URL = API_BASE_URL.replace("/detect", "/health")
+
+    base_url = os.getenv("API_URL", "http://api:8000").rstrip("/")
+    DETECT_URL = f"{base_url}/detect"
+    HEALTH_URL = f"{base_url}/health"
+
     try:
         if requests.get(HEALTH_URL, timeout=3).status_code == 200:
             st.success("API Connected")
@@ -47,7 +50,7 @@ if uploaded_file:
                 files = {"image": (uploaded_file.name, uploaded_file.getvalue(), "image/jpeg")}
                 data = {"confidence_threshold": str(confidence)}
 
-                response = requests.post(API_BASE_URL, files=files, data=data, timeout=60)
+                response = requests.post(DETECT_URL, files=files, data=data, timeout=60)
 
                 if response.status_code == 200:
                     result = response.json()
@@ -61,7 +64,9 @@ if uploaded_file:
                     if annotated_b64:
                         img_bytes = base64.b64decode(annotated_b64)
                         annotated_img = Image.open(BytesIO(img_bytes))
-                        st.image(annotated_img, caption="Detection Results", use_container_width=True)
+                        st.image(
+                            annotated_img, caption="Detection Results", use_container_width=True
+                        )
 
                     # Summary metrics
                     if summary:
