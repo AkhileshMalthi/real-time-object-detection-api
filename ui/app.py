@@ -22,9 +22,9 @@ with st.sidebar:
 
     st.divider()
 
-    base_url = os.getenv("API_URL", "http://api:8000").rstrip("/")
-    DETECT_URL = f"{base_url}/detect"
-    HEALTH_URL = f"{base_url}/health"
+    # distinct endpoints
+    DETECT_URL = os.getenv("DETECT_URL", "http://api:8000/detect")
+    HEALTH_URL = os.getenv("HEALTH_URL", "http://api:8000/health")
 
     try:
         if requests.get(HEALTH_URL, timeout=3).status_code == 200:
