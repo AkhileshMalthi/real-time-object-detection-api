@@ -17,6 +17,23 @@ A containerized REST API and web UI for real-time object detection using YOLOv8 
 - **Containerized** - Docker Compose for simple deployment
 
 ## Quick Start
+### Cloud Deployment (Live)
+
+**API Base URL:**
+```
+https://detection-api-667894359245.asia-south1.run.app
+```
+
+**Streamlit UI:**
+To deploy the UI on Streamlit Cloud:
+1. Fork this repo
+2. Sign up at [share.streamlit.io](https://share.streamlit.io)
+3. New App -> Select Repo
+4. Main file path: `ui/app.py`
+5. Advanced Settings -> Secrets:
+   ```toml
+   API_URL = "https://detection-api-667894359245.asia-south1.run.app/detect"
+   ```
 
 ### Using Docker (Recommended)
 
