@@ -184,6 +184,39 @@ class TestDetectEndpoint:
         call_args = mock_detector.detect.call_args
         assert call_args.args[1] == 0.25
 
+    def test_detect_endpoint_invalid_image(self, client):
+        """
+        Verify 400 error when uploading a non-image file.
+        """
+        # Execute: Upload a text file instead of an image
+        response = client.post(
+            "/detect",
+            files={"image": ("test.txt", b"this is not an image", "text/plain")},
+            data={"confidence_threshold": "0.25"},
+        )
+
+        # Assert: Should return 400 (Bad Request)
+        assert response.status_code == 400
+        assert "Invalid image file" in response.json()["detail"]
+
+    def test_detect_endpoint_corrupted_image(self, client):
+        """
+        Verify 400 error when uploading a corrupted image file.
+        """
+        # Setup: A truncated JPEG file (just the header)
+        corrupted_image = b"\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00H\x00H\x00\x00"
+
+        # Execute
+        response = client.post(
+            "/detect",
+            files={"image": ("corrupted.jpg", corrupted_image, "image/jpeg")},
+            data={"confidence_threshold": "0.25"},
+        )
+
+        # Assert: Should return 400
+        assert response.status_code == 400
+        assert "Invalid image file" in response.json()["detail"]
+
 
 class TestOpenAPISchema:
     """Test OpenAPI documentation generation."""
