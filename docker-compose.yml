@@ -1,8 +1,8 @@
-version: '3.8'
-
 services:
   api:
-    build: ./api
+    build:
+      context: .
+      dockerfile: api/Dockerfile
     ports:
       - "${API_PORT:-8000}:8000"
     volumes:
@@ -18,7 +18,9 @@ services:
       start_period: 30s
 
   ui:
-    build: ./ui
+    build:
+      context: .
+      dockerfile: ui/Dockerfile
     ports:
       - "${UI_PORT:-8501}:8501"
     depends_on:
